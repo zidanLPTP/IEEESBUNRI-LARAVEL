@@ -41,7 +41,7 @@
                             >
                                 <div class="w-full md:w-64 h-48 bg-gray-800 rounded-2xl overflow-hidden relative shrink-0">
                                     @if($article->image)
-                                        <img src="{{ asset('storage/' . $article->image) }}" class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105" />
+                                        <img src="{{ str_starts_with($article->image, 'http') ? $article->image : asset('storage/' . $article->image) }}" class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105" />
                                     @else
                                         <div class="absolute inset-0 flex items-center justify-center text-gray-600 bg-[#0C101C]">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-20 text-[#7AABC3]"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>

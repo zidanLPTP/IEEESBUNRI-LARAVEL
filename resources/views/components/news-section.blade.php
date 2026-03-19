@@ -60,7 +60,7 @@
                     <a href="{{ url('/news/' . $news[0]->slug) }}" class="absolute inset-0 z-30" aria-label="Read article: {{ $news[0]->title }}"></a>
                     
                     <img 
-                        src="{{ $news[0]->image ? asset('storage/' . $news[0]->image) : 'https://placehold.co/800x600/151b2b/7AABC3?text=IEEE+News' }}" 
+                        src="{{ $news[0]->image ? (str_starts_with($news[0]->image, 'http') ? $news[0]->image : asset('storage/' . $news[0]->image)) : 'https://placehold.co/800x600/151b2b/7AABC3?text=IEEE+News' }}" 
                         alt="{{ $news[0]->title }}" 
                         loading="lazy"
                         class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 

@@ -57,7 +57,7 @@
                             style="animation-fill-mode: both; animation-delay: {{ $index * 100 }}ms;"
                         >
                             <img 
-                                src="{{ asset('storage/' . $item->image) }}" 
+                                src="{{ str_starts_with($item->image, 'http') ? $item->image : asset('storage/' . $item->image) }}" 
                                 alt="{{ $item->title }}"
                                 loading="lazy"
                                 onerror="this.src='https://placehold.co/800x800/151b2b/7AABC3?text=IEEE+Gallery'"

@@ -5,7 +5,7 @@
         x-data="newsFormManager()" 
         class="relative w-full pb-20"
     >
-        <form @submit="isSubmitting = true" action="#" method="POST" enctype="multipart/form-data">
+        <form @submit="isSubmitting = true" action="{{ route('admin.news.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="sticky top-0 z-30 bg-[#0C101C]/80 backdrop-blur-md border-b border-white/5 px-4 md:px-8 py-5 flex justify-between items-center shadow-md gap-4 -mx-4 md:-mx-10 px-4 md:px-10 mb-8">
@@ -37,6 +37,15 @@
                 </div>
             </div>
 
+            @if ($errors->any())
+                <div class="mb-6 mx-4 md:mx-0 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-500 text-sm">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
                 <div class="lg:col-span-7 space-y-6">
@@ -61,7 +70,8 @@
                                     </div>
                                 </template>
                                 
-                                <input type="file" name="image" accept="image/*" required @change="handleImageUpload" class="absolute inset-0 opacity-0 cursor-pointer">
+                                <input type="hidden" name="image" :value="uploadedFileUrl">
+                                <input type="file" accept="image/*" required @change="handleImageUpload" class="absolute inset-0 opacity-0 cursor-pointer">
                             </div>
                         </div>
                     </div>
@@ -189,33 +199,54 @@
             Alpine.data('newsFormManager', () => ({
                 isSubmitting: false,
                 coverPreview: null,
+                uploadedFileUrl: null,
                 
-                // Variabel Auto-Tracking
                 userName: '{{ auth()->check() ? auth()->user()->name : "Admin Zidan" }}',
                 
-                // Format Tanggal
                 currentDateShort: new Date().toLocaleDateString('id-ID'),
                 currentDateLong: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
                 
                 formData: {
                     title: '',
                     content: '',
-                    category: 'Featured' // Default value ditambahkan agar preview tidak kosong
+                    category: 'Featured'
                 },
 
-                handleImageUpload(event) {
+                async handleImageUpload(event) {
                     const file = event.target.files[0];
                     if (file) {
-                        // Validasi ukuran instan (Opsional)
                         if(file.size > 5 * 1024 * 1024) {
                             alert('File terlalu besar! Maksimal 5MB.');
                             event.target.value = '';
                             this.coverPreview = null;
+                            this.uploadedFileUrl = null;
                             return;
                         }
                         this.coverPreview = URL.createObjectURL(file);
+                        
+                        this.isSubmitting = true;
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', '{{ env("NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET") }}');
+                        
+                        try {
+                            const cloudName = '{{ env("NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME") }}';
+                            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const data = await res.json();
+                            if (data.secure_url) {
+                                this.uploadedFileUrl = data.secure_url;
+                            }
+                        } catch (err) {
+                            alert('Upload image failed!');
+                        } finally {
+                            this.isSubmitting = false;
+                        }
                     } else {
                         this.coverPreview = null;
+                        this.uploadedFileUrl = null;
                     }
                 }
             }));

@@ -97,7 +97,7 @@
                                                 <div class="absolute top-4 -left-3 w-1 h-12 bg-[#E7B95A] rounded-l-md shadow-[0_0_10px_#E7B95A]"></div>
                                                 <div class="relative w-full h-full bg-[#0C101C] rounded overflow-hidden">
                                                     @if($coordinatorData && $coordinatorData->image)
-                                                        <img src="{{ asset('storage/' . $coordinatorData->image) }}" class="object-cover w-full h-full" />
+                                                        <img src="{{ str_starts_with($coordinatorData->image, 'http') ? $coordinatorData->image : asset('storage/' . $coordinatorData->image) }}" class="object-cover w-full h-full" />
                                                     @else
                                                         <div class="w-full h-full flex items-center justify-center opacity-20 text-[#E7B95A]"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
                                                     @endif
@@ -128,7 +128,7 @@
                                                     <div class="aspect-[3/4] w-full bg-[#0C101C] rounded border border-white/10 p-1.5 shadow-sm relative overflow-hidden transition-all duration-300 group-hover/card:border-[#E7B95A]/30">
                                                         <div class="relative w-full h-full bg-[#1a2133] rounded-[2px] overflow-hidden">
                                                             @if($member->image)
-                                                                <img src="{{ asset('storage/' . $member->image) }}" class="object-cover w-full h-full transition-all duration-500 group-hover/card:scale-110" />
+                                                                <img src="{{ str_starts_with($member->image, 'http') ? $member->image : asset('storage/' . $member->image) }}" class="object-cover w-full h-full transition-all duration-500 group-hover/card:scale-110" />
                                                             @else
                                                                 <div class="w-full h-full flex items-center justify-center opacity-30 text-gray-700"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
                                                             @endif

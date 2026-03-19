@@ -18,7 +18,7 @@
         x-data="eventFormManager(@js($divisions))" 
         class="relative w-full pb-20"
     >
-        <form @submit="isSubmitting = true" action="#" method="POST" enctype="multipart/form-data">
+        <form @submit="isSubmitting = true" action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="sticky top-0 z-30 bg-[#0C101C]/90 backdrop-blur-md border-b border-white/5 px-4 md:px-8 py-5 flex justify-between items-center shadow-md gap-4 -mx-4 md:-mx-10 px-4 md:px-10 mb-8">
@@ -49,6 +49,15 @@
                 </button>
             </div>
 
+            @if ($errors->any())
+                <div class="mb-6 mx-4 md:mx-0 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-500 text-sm">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
                 <div class="lg:col-span-7 space-y-8">
@@ -144,7 +153,8 @@
                                             <span class="text-[10px] text-gray-500 text-center">Upload Poster <br>(Ratio 9:16)</span>
                                         </div>
                                     </template>
-                                    <input type="file" name="poster" accept="image/*" @change="handleImageUpload" class="absolute inset-0 opacity-0 cursor-pointer">
+                                    <input type="hidden" name="poster" :value="uploadedFileUrl">
+                                    <input type="file" accept="image/*" @change="handleImageUpload" class="absolute inset-0 opacity-0 cursor-pointer">
                                 </div>
                             </div>
 
@@ -250,6 +260,7 @@
                 divisions: divisions,
                 isSubmitting: false,
                 posterPreview: null,
+                uploadedFileUrl: null,
                 formData: {
                     title: '',
                     divisionId: 1, // Default ke divisi pertama
@@ -265,12 +276,41 @@
                 },
 
                 // Logic Image Preview URL
-                handleImageUpload(event) {
+                async handleImageUpload(event) {
                     const file = event.target.files[0];
                     if (file) {
+                        if(file.size > 5 * 1024 * 1024) {
+                            alert('File too large! Max 5MB.');
+                            event.target.value = '';
+                            this.posterPreview = null;
+                            this.uploadedFileUrl = null;
+                            return;
+                        }
                         this.posterPreview = URL.createObjectURL(file);
+                        
+                        this.isSubmitting = true;
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', '{{ env("NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET") }}');
+                        
+                        try {
+                            const cloudName = '{{ env("NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME") }}';
+                            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const data = await res.json();
+                            if (data.secure_url) {
+                                this.uploadedFileUrl = data.secure_url;
+                            }
+                        } catch (err) {
+                            alert('Upload image failed!');
+                        } finally {
+                            this.isSubmitting = false;
+                        }
                     } else {
                         this.posterPreview = null;
+                        this.uploadedFileUrl = null;
                     }
                 },
 

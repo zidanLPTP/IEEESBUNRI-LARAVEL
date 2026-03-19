@@ -1,30 +1,9 @@
 <x-layouts.admin>
     <x-slot:title>Personnel Data | IEEE Admin</x-slot:title>
 
-    <div x-data="personnelManager(@js($officers), 'ADMIN')" class="relative w-full h-full">
+    <div x-data="personnelManager(@js($officers))" class="relative w-full h-full">
 
-        <template x-if="accessDenied">
-            <div class="h-[80vh] flex flex-col items-center justify-center p-8 text-center animate-[fadeInUp_0.3s_ease-out]">
-                <button @click="isSidebarOpen = true" class="md:hidden absolute top-4 left-4 p-2 bg-[#151b2b] rounded-lg text-[#E7B95A] border border-white/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-                </button>
-                <div class="w-24 h-24 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(239,68,68,0.2)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-                </div>
-                <h2 class="text-3xl font-bold text-white mb-3">Access Restricted</h2>
-                <p class="text-gray-400 max-w-md mb-8 leading-relaxed">
-                   Sorry, you don't have permission to view this page.<br/>
-                   <span class="text-white font-semibold">Only Head of Division and Core members can access this page.</span>
-                </p>
-                <div class="flex gap-4">
-                    <a href="{{ url('/admin') }}" class="px-6 py-3 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 font-bold text-sm transition-all">
-                        Go Back to Dashboard
-                    </a>
-                </div>
-            </div>
-        </template>
 
-        <template x-if="!accessDenied">
             <div class="pb-20">
                 <div class="sticky top-0 z-30 bg-[#0C101C]/80 backdrop-blur-md border-b border-white/5 px-4 md:px-8 py-5 flex flex-col md:flex-row justify-between items-center gap-4 shadow-md -mx-4 md:-mx-10 px-4 md:px-10 mb-8">
                     <div class="flex items-center gap-4 w-full md:w-auto">
@@ -94,7 +73,7 @@
                                             <div class="flex items-center gap-4">
                                                 <div class="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-800 border border-white/10 shrink-0 flex items-center justify-center font-bold text-gray-500">
                                                     <template x-if="officer.image">
-                                                        <img :src="`/storage/${officer.image}`" :alt="officer.name" class="object-cover w-full h-full" />
+                                                        <img :src="officer.image.startsWith('http') ? officer.image : `/storage/${officer.image}`" :alt="officer.name" class="object-cover w-full h-full" />
                                                     </template>
                                                     <template x-if="!officer.image">
                                                         <span x-text="officer.name.charAt(0)"></span>
@@ -172,30 +151,17 @@
                 </div>
 
             </div>
-        </template>
-        
-        <div class="fixed bottom-6 right-6 z-50 bg-[#151b2b] p-3 rounded-xl border border-white/10 shadow-2xl flex items-center gap-3">
-            <span class="text-[10px] text-gray-400 font-mono uppercase">Test Role:</span>
-            <select x-model="userRole" class="bg-[#0C101C] text-xs text-white border border-white/10 rounded px-2 py-1 outline-none">
-                <option value="ADMIN">ADMIN</option>
-                <option value="STAFF">STAFF (Denied)</option>
-            </select>
-        </div>
+
 
     </div>
 
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('personnelManager', (initialOfficers, initialRole) => ({
+            Alpine.data('personnelManager', (initialOfficers) => ({
                 officers: initialOfficers,
-                userRole: initialRole,
                 searchQuery: '',
                 currentPage: 1,
-                itemsPerPage: 10, // Dikembalikan ke 10 item per halaman
-                
-                get accessDenied() {
-                    return !['ADMIN', 'CORE', 'HEAD'].includes(this.userRole);
-                },
+                itemsPerPage: 10,
 
                 get filteredOfficers() {
                     if (this.searchQuery.trim() === '') return this.officers;

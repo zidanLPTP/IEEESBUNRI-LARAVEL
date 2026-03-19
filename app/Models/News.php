@@ -15,6 +15,21 @@ class News extends Model
         'is_published' => 'boolean',
     ];
 
+    protected static function booted()
+    {
+        static::deleting(function ($model) {
+            if ($model->image) {
+                \App\Services\CloudinaryService::deleteImage($model->image);
+            }
+        });
+
+        static::updating(function ($model) {
+            if ($model->isDirty('image') && $model->getOriginal('image')) {
+                \App\Services\CloudinaryService::deleteImage($model->getOriginal('image'));
+            }
+        });
+    }
+
     // Relasi ke User (Penulis)
     public function user()
     {

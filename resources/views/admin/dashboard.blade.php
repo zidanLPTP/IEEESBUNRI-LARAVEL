@@ -1,21 +1,7 @@
 <x-layouts.admin>
     <x-slot:title>Dashboard | IEEE Admin</x-slot:title>
 
-    @php
-        // MOCK DATA (Nantinya di-passing dari Controller)
-        $stats = ['totalMembers' => 45, 'totalDivisions' => 6, 'totalContent' => 120];
-        
-        $events = [
-            ['id' => 1, 'title' => 'AI Workshop', 'category' => 'Education', 'date' => '15/02/2026', 'author' => 'Admin'],
-            ['id' => 2, 'title' => 'Design Sprint', 'category' => 'Creative', 'date' => '28/02/2026', 'author' => 'Zidan'],
-        ];
-        
-        $news = [
-            ['id' => 1, 'title' => 'Global Summit', 'category' => 'Featured', 'date' => '24/02/2026', 'author' => 'PR Team'],
-        ];
-        
-        $gallery = []; // Kosong untuk mengetes Empty State
-    @endphp
+
 
     <header class="flex justify-between items-center mb-10 gap-4">
         <div class="flex items-center gap-4">
@@ -204,12 +190,33 @@
                     if (this.currentPage > 1) this.currentPage--;
                 },
 
-                deleteItem(id) {
-                    if(confirm("Apakah Anda yakin ingin menghapus item ini?")) {
-                        // Nanti dihubungkan ke AJAX Request/Livewire untuk hapus ke Database
-                        if (this.activeTab === 'events') this.events = this.events.filter(i => i.id !== id);
-                        else if (this.activeTab === 'news') this.news = this.news.filter(i => i.id !== id);
-                        else this.gallery = this.gallery.filter(i => i.id !== id);
+                async deleteItem(id) {
+                    if(confirm("Apakah Anda yakin ingin menghapus item ini permanen? File gambar juga akan terhapus otomatis di Cloudinary!")) {
+                        let endpoint = '';
+                        if (this.activeTab === 'events') endpoint = `/admin/events/${id}`;
+                        else if (this.activeTab === 'news') endpoint = `/admin/news/${id}`;
+                        else if (this.activeTab === 'gallery') endpoint = `/admin/gallery/${id}`;
+                        
+                        try {
+                            const res = await fetch(endpoint, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                }
+                            });
+                            
+                            if(res.ok) {
+                                if (this.activeTab === 'events') this.events = this.events.filter(i => i.id !== id);
+                                else if (this.activeTab === 'news') this.news = this.news.filter(i => i.id !== id);
+                                else this.gallery = this.gallery.filter(i => i.id !== id);
+                            } else {
+                                alert("Failed to delete item from server.");
+                            }
+                        } catch(err) {
+                            console.error(err);
+                            alert("Server error while deleting.");
+                        }
                     }
                 }
             }));

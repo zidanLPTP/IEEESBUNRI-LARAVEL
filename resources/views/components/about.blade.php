@@ -22,6 +22,10 @@
 
 <section id="about" class="relative py-32 bg-[#0C101C] text-white overflow-hidden">
       
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] h-full bg-[#3386B7]/10 z-0 overflow-hidden" aria-hidden="true">
+        <div class="absolute top-0 left-0 w-full h-[150px] bg-gradient-to-b from-transparent via-[#E7B95A] to-transparent opacity-50 animate-shooting"></div>
+    </div>
+
     <x-firefly-background />
 
     <div class="absolute -top-[10%] -right-[20%] w-[300px] h-[300px] md:top-[-25%] md:right-[-15%] md:w-[600px] md:h-[600px] z-0 pointer-events-none" aria-hidden="true">

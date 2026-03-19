@@ -11,4 +11,19 @@ class Event extends Model
     protected $casts = [
         'date' => 'date', // Otomatis jadi Carbon instance
     ];
+
+    protected static function booted()
+    {
+        static::deleting(function ($model) {
+            if ($model->poster) {
+                \App\Services\CloudinaryService::deleteImage($model->poster);
+            }
+        });
+
+        static::updating(function ($model) {
+            if ($model->isDirty('poster') && $model->getOriginal('poster')) {
+                \App\Services\CloudinaryService::deleteImage($model->getOriginal('poster'));
+            }
+        });
+    }
 }

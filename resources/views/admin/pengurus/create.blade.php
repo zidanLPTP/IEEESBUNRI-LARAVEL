@@ -100,6 +100,15 @@
                     </div>
                 @endif
 
+                @if ($errors->any())
+                    <div class="mb-6 mx-4 md:mx-0 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-500 text-sm">
+                        <ul class="list-disc pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     
                     <div class="lg:col-span-4 space-y-6">
@@ -116,7 +125,8 @@
                                             <span class="text-[10px] text-gray-500 uppercase font-bold">Upload Photo</span>
                                         </div>
                                     </template>
-                                    <input type="file" name="image" accept="image/*" @change="handleImageUpload" class="absolute inset-0 opacity-0 cursor-pointer">
+                                    <input type="hidden" name="image" :value="uploadedFileUrl">
+                                    <input type="file" accept="image/*" @change="handleImageUpload" class="absolute inset-0 opacity-0 cursor-pointer">
                                 </div>
                             </div>
 
@@ -244,6 +254,7 @@
                 userRole: initialRole,
                 isSubmitting: false,
                 imagePreview: null,
+                uploadedFileUrl: null,
                 showDivisionDropdown: true,
                 
                 formData: {
@@ -258,12 +269,41 @@
                     return !['ADMIN', 'CORE', 'HEAD'].includes(this.userRole);
                 },
 
-                handleImageUpload(event) {
+                async handleImageUpload(event) {
                     const file = event.target.files[0];
                     if (file) {
+                        if(file.size > 5 * 1024 * 1024) {
+                            alert('File too large! Max 5MB.');
+                            event.target.value = '';
+                            this.imagePreview = null;
+                            this.uploadedFileUrl = null;
+                            return;
+                        }
                         this.imagePreview = URL.createObjectURL(file);
+                        
+                        this.isSubmitting = true;
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', '{{ env("NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET") }}');
+                        
+                        try {
+                            const cloudName = '{{ env("NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME") }}';
+                            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const data = await res.json();
+                            if (data.secure_url) {
+                                this.uploadedFileUrl = data.secure_url;
+                            }
+                        } catch (err) {
+                            alert('Upload image failed!');
+                        } finally {
+                            this.isSubmitting = false;
+                        }
                     } else {
                         this.imagePreview = null;
+                        this.uploadedFileUrl = null;
                     }
                 },
 
