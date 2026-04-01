@@ -29,7 +29,7 @@ class NewsController extends Controller
 
         $data['author_name'] = auth()->check() ? auth()->user()->name : 'Admin';
         $data['excerpt'] = Str::limit(strip_tags($data['content']), 100);
-        $data['read_time'] = max(1, (int)ceil(str_word_count(strip_tags($data['content'])) / 200));
+        $data['read_time'] = max(1, (int) ceil(str_word_count(strip_tags($data['content'])) / 200));
 
         if (empty($data['date'])) {
             $data['date'] = now();

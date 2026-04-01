@@ -120,16 +120,37 @@ Route::get('/gallery', function () {
     ]);
 })->name('gallery.public');
 
+// ---- Registration ------
+Route::get('/registration', function () {
+    return view('registration');
+})->name('registration');
+
+//----- instagram ------
+Route::get('/instagram-feed', function () {
+
+    $posts = [
+        "https://www.instagram.com/ieee.sb.unri/",
+    ];
+
+    $response = file_get_contents(
+        "https://www.instagram.com/ieee.sb.unri/?__a=1&__d=dis"
+    );
+
+    return $response;
+});
+
 /* |-------------------------------------------------------------------------- | Auth & Admin |-------------------------------------------------------------------------- */
 Route::get('/login', [LoginController::class , 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class , 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class , 'logout'])->name('logout');
 
-Route::prefix('admin')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class , 'index'])->name('admin.dashboard');
     Route::get('/pengurus', [PengurusController::class , 'index'])->name('admin.pengurus.index');
     Route::get('/pengurus/add', [PengurusController::class , 'create'])->name('admin.pengurus.create');
     Route::post('/pengurus/store', [PengurusController::class , 'store'])->name('admin.pengurus.store');
+    Route::delete('/pengurus/{id}', [PengurusController::class, 'destroy'])->name('admin.pengurus.destroy');
+    Route::get('/admin/pengurus/{id}/edit', [OfficerController::class, 'edit'])->name('pengurus.edit');
 
     Route::get('/events/create', [EventController::class , 'create'])->name('admin.events.create');
     Route::post('/events/store', [EventController::class , 'store'])->name('admin.events.store');

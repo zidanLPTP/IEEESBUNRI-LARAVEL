@@ -22,21 +22,21 @@ class DashboardController extends Controller
 
         $events = Event::latest('date')->get()->map(function ($item) {
             return [
-            'id' => $item->id,
-            'title' => $item->title,
-            'category' => $item->category,
-            'date' => \Carbon\Carbon::parse($item->date)->format('d/m/Y'),
-            'author' => 'Admin'
+                'id' => $item->id,
+                'title' => $item->title,
+                'category' => $item->category,
+                'date' => \Carbon\Carbon::parse($item->date)->format('d/m/Y'),
+                'author' => 'Admin'
             ];
         });
 
         $news = News::latest('date')->get()->map(function ($item) {
             return [
-            'id' => $item->id,
-            'title' => $item->title,
-            'category' => $item->category,
-            'date' => $item->date ?\Carbon\Carbon::parse($item->date)->format('d/m/Y') : $item->created_at->format('d/m/Y'),
-            'author' => $item->author_name ?? 'Admin'
+                'id' => $item->id,
+                'title' => $item->title,
+                'category' => $item->category,
+                'date' => $item->date ? \Carbon\Carbon::parse($item->date)->format('d/m/Y') : $item->created_at->format('d/m/Y'),
+                'author' => $item->author_name ?? 'Admin'
             ];
         });
 
@@ -45,11 +45,11 @@ class DashboardController extends Controller
         if (class_exists(Gallery::class)) {
             $gallery = Gallery::latest('created_at')->get()->map(function ($item) {
                 return [
-                'id' => $item->id,
-                'caption' => $item->title ?? 'Gallery Media',
-                'tag' => $item->category ?? 'General',
-                'date' => $item->created_at->format('d/m/Y'),
-                'author' => 'Admin'
+                    'id' => $item->id,
+                    'caption' => $item->title ?? 'Gallery Media',
+                    'tag' => $item->category ?? 'General',
+                    'date' => $item->created_at->format('d/m/Y'),
+                    'author' => 'Admin'
                 ];
             });
         }

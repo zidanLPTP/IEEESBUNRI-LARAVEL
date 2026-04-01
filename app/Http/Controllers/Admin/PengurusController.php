@@ -49,8 +49,19 @@ class PengurusController extends Controller
         ]);
 
         return redirect()->route('admin.pengurus.index')->with('success', 'Anggota Pengurus baru berhasil ditambahkan!');
+
     }
 
 
+    public function destroy($id)
+    {
+        $officer = Officer::findOrFail($id);
+
+        $officer->delete();
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
 
 }

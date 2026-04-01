@@ -4,7 +4,7 @@
 @endphp
 
 <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
-    
+
     @for ($i = 0; $i < $particleCount; $i++)
         @php
             $color = $colors[array_rand($colors)];
@@ -17,19 +17,18 @@
             $yOffset = rand(-50, 50) . 'px';
         @endphp
 
-        <div class="absolute rounded-full opacity-0 animate-firefly"
-             style="
-                background-color: {{ $color }};
-                width: {{ $size }};
-                height: {{ $size }};
-                top: {{ $top }};
-                left: {{ $left }};
-                box-shadow: 0 0 {{ (int)$size * 2 }}px {{ $color }};
-                --x: {{ $xOffset }};
-                --y: {{ $yOffset }};
-                animation-duration: {{ $duration }};
-                animation-delay: {{ $delay }};
-             ">
+        <div class="absolute rounded-full opacity-0 animate-firefly" style="
+                    background-color: {{ $color }};
+                    width: {{ $size }};
+                    height: {{ $size }};
+                    top: {{ $top }};
+                    left: {{ $left }};
+                    box-shadow: 0 0 {{ (int) $size * 2 }}px {{ $color }};
+                    --x: {{ $xOffset }};
+                    --y: {{ $yOffset }};
+                    animation-duration: {{ $duration }};
+                    animation-delay: {{ $delay }};
+                 ">
         </div>
     @endfor
 
@@ -37,9 +36,19 @@
 
 <style>
     @keyframes firefly-move {
-        0%, 100% { opacity: 0; transform: translate(0, 0); }
-        50% { opacity: 0.8; transform: translate(var(--x), var(--y)); }
+
+        0%,
+        100% {
+            opacity: 0;
+            transform: translate(0, 0);
+        }
+
+        50% {
+            opacity: 0.8;
+            transform: translate(var(--x), var(--y));
+        }
     }
+
     .animate-firefly {
         animation: firefly-move infinite ease-in-out;
     }

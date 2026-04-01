@@ -5,7 +5,7 @@
         ['name' => 'Event', 'href' => '/events'],
         ['name' => 'News', 'href' => '/news'],
         ['name' => 'Gallery', 'href' => '/gallery'],
-        ['name' => 'Contact Us', 'href' => '#Contact'],
+        ['name' => 'Registration', 'href' => '/registration'],
     ];
 
     $isActive = function($href) {
@@ -39,7 +39,7 @@
             <div class="relative bg-ieee-night/40 backdrop-blur-2xl border border-white/20 rounded-full px-6 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.3)] flex items-center justify-between transition-all duration-500 hover:bg-ieee-night/60 hover:border-white/30">
             
                 <a href="/" class="flex items-center gap-2 shrink-0 pl-2">
-                    <img src="{{ asset('images/ieeeunri.jpg') }}" alt="IEEE UNRI" class="h-10 w-auto object-contain">
+                    <img src="{{ asset('images/ieeeunripth.png') }}" alt="IEEE UNRI" class="h-10 w-auto object-contain">
                 </a>
 
                 <ul class="hidden md:flex items-center gap-1 ml-auto">
