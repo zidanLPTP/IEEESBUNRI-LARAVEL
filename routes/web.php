@@ -16,24 +16,25 @@ use App\Models\Officer;
 // --- HOMEPAGE ---
 Route::get('/', function () {
     $news = News::where('is_published', true)->latest('date')->take(3)->get();
-    $eventsList = Event::all()->map(function ($event) {
+    $eventsList = Event::all()->map(
+        function ($event) {
             return [
-            'id' => $event->id,
-            'division' => $event->category,
-            'realDivisionName' => $event->category . " (" . ucfirst($event->mode) . ")",
-            'monthIndex' => $event->date->format('n') - 1,
-            'year' => (int)$event->date->format('Y'),
-            'date' => (int)$event->date->format('j'),
-            'title' => $event->title,
-            'speaker' => $event->location_name,
-            'image' => $event->poster ? (str_starts_with($event->poster, 'http') ? $event->poster : asset('storage/' . $event->poster)) : null,
-            'desc' => $event->description
+                'id' => $event->id,
+                'division' => $event->category,
+                'realDivisionName' => $event->category . " (" . ucfirst($event->mode) . ")",
+                'monthIndex' => $event->date->format('n') - 1,
+                'year' => (int) $event->date->format('Y'),
+                'date' => (int) $event->date->format('j'),
+                'title' => $event->title,
+                'speaker' => $event->location_name,
+                'image' => $event->poster ? (str_starts_with($event->poster, 'http') ? $event->poster : asset('storage/' . $event->poster)) : null,
+                'desc' => $event->description
             ];
         }
-        );
-        $writersCount = News::distinct('author_name')->count();
-        return view('welcome', compact('news', 'eventsList', 'writersCount'));
-    });
+    );
+    $writersCount = News::distinct('author_name')->count();
+    return view('welcome', compact('news', 'eventsList', 'writersCount'));
+});
 
 // --- ABOUT US ---
 Route::get('/about', function () {
@@ -44,16 +45,16 @@ Route::get('/about', function () {
     if ($counselors->count() < 4) {
         $needed = 4 - $counselors->count();
         for ($i = 1; $i <= $needed; $i++) {
-            $counselors->push((object)['name' => 'Vacant Position', 'position' => 'Counselor', 'sub_role' => 'Waiting for Photo', 'image' => null]);
+            $counselors->push((object) ['name' => 'Vacant Position', 'position' => 'Counselor', 'sub_role' => 'Waiting for Photo', 'image' => null]);
         }
     }
     if (!$director) {
-        $director = (object)['name' => 'Vacant Position', 'position' => 'Director', 'sub_role' => 'Waiting for Photo', 'image' => null];
+        $director = (object) ['name' => 'Vacant Position', 'position' => 'Director', 'sub_role' => 'Waiting for Photo', 'image' => null];
     }
     if ($viceDirectors->count() < 3) {
         $needed = 3 - $viceDirectors->count();
         for ($i = 1; $i <= $needed; $i++) {
-            $viceDirectors->push((object)['name' => 'Vacant Position', 'position' => 'Vice Director', 'sub_role' => 'Waiting for Photo', 'image' => null]);
+            $viceDirectors->push((object) ['name' => 'Vacant Position', 'position' => 'Vice Director', 'sub_role' => 'Waiting for Photo', 'image' => null]);
         }
     }
     return view('about', compact('counselors', 'director', 'viceDirectors'));
@@ -80,21 +81,30 @@ Route::get('/news/{slug}', function ($slug) {
 Route::get('/events', function () {
     $now = now();
     $rawEvents = Event::all();
-    $alpineEvents = $rawEvents->map(function ($e) {
+    $alpineEvents = $rawEvents->map(
+        function ($e) {
             return [
-            'id' => $e->id, 'title' => $e->title, 'desc' => $e->description,
-            'date' => $e->date->day, 'monthIndex' => $e->date->month - 1, 'year' => $e->date->year,
-            'timeStart' => $e->time_start, 'locationName' => $e->location_name, 'mode' => $e->mode,
-            'divisionId' => strtolower($e->category), 'realCategory' => $e->category,
-            'poster' => $e->poster ? (str_starts_with($e->poster, 'http') ? $e->poster : asset('storage/' . $e->poster)) : null,
-            'regLink' => $e->reg_link, 'regText' => 'Register Now'
+                'id' => $e->id,
+                'title' => $e->title,
+                'desc' => $e->description,
+                'date' => $e->date->day,
+                'monthIndex' => $e->date->month - 1,
+                'year' => $e->date->year,
+                'timeStart' => $e->time_start,
+                'locationName' => $e->location_name,
+                'mode' => $e->mode,
+                'divisionId' => strtolower($e->category),
+                'realCategory' => $e->category,
+                'poster' => $e->poster ? (str_starts_with($e->poster, 'http') ? $e->poster : asset('storage/' . $e->poster)) : null,
+                'regLink' => $e->reg_link,
+                'regText' => 'Register Now'
             ];
         }
-        );
-        $upcomingEvents = $rawEvents->where('date', '>=', $now->toDateString())->sortBy('date');
-        $pastEvents = $rawEvents->where('date', '<', $now->toDateString())->sortByDesc('date');
-        return view('events', compact('alpineEvents', 'upcomingEvents', 'pastEvents', 'rawEvents'));
-    })->name('events.public');
+    );
+    $upcomingEvents = $rawEvents->where('date', '>=', $now->toDateString())->sortBy('date');
+    $pastEvents = $rawEvents->where('date', '<', $now->toDateString())->sortByDesc('date');
+    return view('events', compact('alpineEvents', 'upcomingEvents', 'pastEvents', 'rawEvents'));
+})->name('events.public');
 
 // --- GALLERY (DATA MURNI DATABASE) ---
 Route::get('/gallery', function () {
@@ -113,10 +123,10 @@ Route::get('/gallery', function () {
     $totalPages = ceil($galleries->count() / $perPage);
 
     return view('gallery', [
-    'galleries' => $pagedData,
-    'currentPage' => $currentPage,
-    'totalPages' => $totalPages,
-    'hasArticles' => $galleries->count() > 0
+        'galleries' => $pagedData,
+        'currentPage' => $currentPage,
+        'totalPages' => $totalPages,
+        'hasArticles' => $galleries->count() > 0
     ]);
 })->name('gallery.public');
 
@@ -140,27 +150,27 @@ Route::get('/instagram-feed', function () {
 });
 
 /* |-------------------------------------------------------------------------- | Auth & Admin |-------------------------------------------------------------------------- */
-Route::get('/login', [LoginController::class , 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class , 'login'])->name('login.post');
-Route::post('/logout', [LoginController::class , 'logout'])->name('logout');
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
-    Route::get('/', [DashboardController::class , 'index'])->name('admin.dashboard');
-    Route::get('/pengurus', [PengurusController::class , 'index'])->name('admin.pengurus.index');
-    Route::get('/pengurus/add', [PengurusController::class , 'create'])->name('admin.pengurus.create');
-    Route::post('/pengurus/store', [PengurusController::class , 'store'])->name('admin.pengurus.store');
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/pengurus', [PengurusController::class, 'index'])->name('admin.pengurus.index');
+    Route::get('/pengurus/add', [PengurusController::class, 'create'])->name('admin.pengurus.create');
+    Route::post('/pengurus/store', [PengurusController::class, 'store'])->name('admin.pengurus.store');
     Route::delete('/pengurus/{id}', [PengurusController::class, 'destroy'])->name('admin.pengurus.destroy');
     Route::get('/admin/pengurus/{id}/edit', [OfficerController::class, 'edit'])->name('pengurus.edit');
 
-    Route::get('/events/create', [EventController::class , 'create'])->name('admin.events.create');
-    Route::post('/events/store', [EventController::class , 'store'])->name('admin.events.store');
-    Route::delete('/events/{id}', [EventController::class , 'destroy'])->name('admin.events.destroy');
+    Route::get('/events/create', [EventController::class, 'create'])->name('admin.events.create');
+    Route::post('/events/store', [EventController::class, 'store'])->name('admin.events.store');
+    Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('admin.events.destroy');
 
-    Route::get('/gallery/create', [GalleryController::class , 'create'])->name('admin.gallery.create');
-    Route::post('/gallery/store', [GalleryController::class , 'store'])->name('admin.gallery.store');
-    Route::delete('/gallery/{id}', [GalleryController::class , 'destroy'])->name('admin.gallery.destroy');
+    Route::get('/gallery/create', [GalleryController::class, 'create'])->name('admin.gallery.create');
+    Route::post('/gallery/store', [GalleryController::class, 'store'])->name('admin.gallery.store');
+    Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])->name('admin.gallery.destroy');
 
-    Route::get('/news/create', [NewsController::class , 'create'])->name('admin.news.create');
-    Route::post('/news/store', [NewsController::class , 'store'])->name('admin.news.store');
-    Route::delete('/news/{id}', [NewsController::class , 'destroy'])->name('admin.news.destroy');
+    Route::get('/news/create', [NewsController::class, 'create'])->name('admin.news.create');
+    Route::post('/news/store', [NewsController::class, 'store'])->name('admin.news.store');
+    Route::delete('/news/{id}', [NewsController::class, 'destroy'])->name('admin.news.destroy');
 });

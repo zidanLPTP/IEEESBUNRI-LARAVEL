@@ -34,6 +34,7 @@ class PengurusController extends Controller
             'position' => 'required|string',
             'division' => 'required|string',
             'image' => 'nullable|string', // Cloudinary URL
+            'password' => 'required|string',
         ], [
             'member_id.unique' => 'Member ID ini sudah terdaftar di sistem!',
         ]);
@@ -44,7 +45,7 @@ class PengurusController extends Controller
             'position' => $request->position,
             'sub_role' => $request->division,
             'image' => $request->image,
-            'password' => Hash::make($request->member_id),
+            'password' => Hash::make($request->password),
             'accessRole' => $request->access_role ?? 'STAFF',
         ]);
 

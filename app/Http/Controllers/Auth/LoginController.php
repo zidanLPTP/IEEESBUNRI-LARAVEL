@@ -14,7 +14,7 @@ class LoginController extends Controller
     {
         // Jika sudah login, jangan boleh ke halaman login lagi, lempar ke admin
         if (Auth::check()) {
-            return redirect()->route('admin.dashboard');
+            return redirect('/admin');
         }
         return view('auth.login');
     }
@@ -23,23 +23,25 @@ class LoginController extends Controller
     {
         // 1. Validasi Input
         $credentials = $request->validate([
-            'name'     => 'required|string',
+            'name' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // 2. Cari User secara Manual untuk pengecekan Hash
-        $user = Officer::where('name', $request->name)->first();
+        // 2. Cari User berdasarkan Name dan Member ID (password field)
+        $user = Officer::where('name', $request->name)
+            ->where('member_id', $request->password)
+            ->first();
+        // if ($user) {
+        //     Auth::login($user); // Login secara resmi
+        //     $request->session()->regenerate(); // KUNCI SESI: Agar tidak dianggap anonim
+        //     // Alihkan ke rute bernama admin.dashboard
+        //     return redirect()->route('admin.dashboard');
+        // }
+        if ($user) {
+            Auth::login($user);
+            $request->session()->regenerate();
 
-        // 3. Verifikasi Password
-        // Di dalam fungsi login
-        if ($user && Hash::check($request->password, $user->password)) {
-            
-            Auth::login($user); // Login secara resmi
-            
-            $request->session()->regenerate(); // KUNCI SESI: Agar tidak dianggap anonim
-
-            // Alihkan ke rute bernama admin.dashboard
-            return redirect()->route('admin.dashboard');
+            return redirect('/admin'); // atau route('admin.dashboard')
         }
 
         // Jika gagal, kirim pesan error yang JELAS
