@@ -254,6 +254,22 @@
                                     </div>
                                 </div>
 
+                                <div>
+                                    <label class="text-xs font-bold text-gray-500 uppercase mb-2 block">Create Password
+                                        <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round"
+                                            class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                        <input type="text" name="password" required placeholder="Enter password..."
+                                            class="w-full bg-[#0C101C] border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white focus:border-[#E7B95A] outline-none text-lg font-bold placeholder:text-gray-700 transition-colors" />
+                                    </div>
+                                </div>
+
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label
@@ -328,7 +344,7 @@
                 },
 
                 get accessDenied() {
-                    return !['ADMIN', 'CORE', 'HEAD'].includes(this.userRole);
+                    return false;
                 },
 
                 async handleImageUpload(event) {

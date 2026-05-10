@@ -88,13 +88,9 @@
 
     <div class="p-4 border-t border-white/5 mt-auto">
         <div class="flex items-center gap-3 mb-4 px-4">
-            <div
-                class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden relative border border-white/10 flex items-center justify-center bg-[#E7B95A] text-[#0C101C] font-bold">
-                {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
-            </div>
             <div class="overflow-hidden">
-                <p class="text-sm font-bold truncate w-32">{{ auth()->user()->name ?? 'Guest' }}</p>
-                <p class="text-[10px] text-gray-500 truncate">{{ auth()->user()->accessRole ?? 'Role Placeholder' }}</p>
+                <p class="text-sm font-bold truncate w-40">{{ auth()->user()->name ?? 'Guest' }}</p>
+                <p class="text-[10px] text-gray-500 truncate">{{ auth()->user()->position ?? 'Member' }}</p>
             </div>
         </div>
         <form action="{{ route('logout') }}" method="POST" id="logout-form">
